@@ -8,12 +8,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class ResTfulInPeaceApplication extends SpringBootServletInitializer{
+public class RESTfulInPeaceApplication extends SpringBootServletInitializer{
 
 	String contextPath = "";
 	
 	public static void main(String[] args) {
-		SpringApplication.run(ResTfulInPeaceApplication.class, args);
+		SpringApplication.run(RESTfulInPeaceApplication.class, args);
 	}
 
 	@Override

@@ -11,6 +11,8 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 public class Doctor {
 	
@@ -19,7 +21,7 @@ public class Doctor {
 	Long id;
 	String name;
 	String dept;
-	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	@Temporal(TemporalType.DATE)
 	Date joining;
 	public Long getId() {
 		return id;
