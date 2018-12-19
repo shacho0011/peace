@@ -15,6 +15,7 @@ import com.mohit.example.dto.LoginResponseDTO;
 import com.mohit.example.dto.RegistrationResponseDTO;
 import com.mohit.example.dto.UserInfoDTO;
 import com.mohit.example.model.User;
+import com.mohit.example.model.security.JwtUser;
 import com.mohit.example.service.DtoUtilService;
 import com.mohit.example.service.UserService;
 
