@@ -7,8 +7,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,7 +70,7 @@ public class DoctorRestController {
 		return map;
 	}
 	
-	@PostMapping("/update/doctors")
+	@PutMapping("/update/doctors")
 	Map<String, Object> updateDoctor(@RequestParam Long id, @RequestParam String json) {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -86,7 +88,7 @@ public class DoctorRestController {
 		return map;
 	}
 	
-	@PostMapping("/delete/doctors")
+	@DeleteMapping("/delete/doctors")
 	Map<String, Object> deleteDoctor(@RequestParam Long id) {
 		
 		Map<String, Object> map = new HashMap<String, Object>();

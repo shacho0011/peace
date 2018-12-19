@@ -102,6 +102,7 @@ public class DoctorServiceImpl implements DoctorService {
 
 	@Override
 	public Boolean deleteDoctor(Doctor doctor) {
+		
 		try {
 			doctorRepository.delete(doctor);
 		} catch (Exception e) {
