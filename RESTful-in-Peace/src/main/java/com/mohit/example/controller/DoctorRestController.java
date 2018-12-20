@@ -80,15 +80,20 @@ public class DoctorRestController {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			DoctorInfoDTO doctorInfoDTO = new ObjectMapper().readValue(requestData, DoctorInfoDTO.class);
-			Doctor doctor = new Doctor();
-			doctor = doctorService.createOrUpdateDoctor(doctor, doctorInfoDTO);
-			if (doctor.getId() != null) {
-				map.put("status", "success");
-				responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+			if (requestData != null) {
+				DoctorInfoDTO doctorInfoDTO = new ObjectMapper().readValue(requestData, DoctorInfoDTO.class);
+				Doctor doctor = new Doctor();
+				doctor = doctorService.createOrUpdateDoctor(doctor, doctorInfoDTO);
+				if (doctor.getId() != null) {
+					map.put("status", "success");
+					responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+				} else {
+					map.put("status", "Please try again");
+					responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+				}
 			} else {
-				map.put("status", "Please try again");
-				responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+				responseEntity = new ResponseEntity<>("Request data is empty. Please try again",
+						HttpStatus.NOT_ACCEPTABLE);
 			}
 
 		} catch (Exception e) {
@@ -106,11 +111,17 @@ public class DoctorRestController {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			DoctorInfoDTO doctorInfoDTO = new ObjectMapper().readValue(requestData, DoctorInfoDTO.class);
-			Doctor doctor = doctorService.getDoctorById(id);
-			doctor = doctorService.createOrUpdateDoctor(doctor, doctorInfoDTO);
-			map.put("status", "updated");
-			responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+			if (id != null && requestData != null) {
+				DoctorInfoDTO doctorInfoDTO = new ObjectMapper().readValue(requestData, DoctorInfoDTO.class);
+				Doctor doctor = doctorService.getDoctorById(id);
+				doctor = doctorService.createOrUpdateDoctor(doctor, doctorInfoDTO);
+				map.put("status", "updated");
+				responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+			} else {
+				responseEntity = new ResponseEntity<>("Request data is empty. Please try again",
+						HttpStatus.NOT_ACCEPTABLE);
+			}
+
 		} catch (Exception e) {
 			map.put("status", "error");
 			responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -126,20 +137,25 @@ public class DoctorRestController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = null;
 		try {
-			user = userService.getUserDetails(principal);
-			if (user.getRole().getName().toLowerCase().equals("role_admin")) {
-				Doctor doctor = doctorService.getDoctorById(id);
-				boolean flag = doctorService.deleteDoctor(doctor);
-				if (flag) {
-					map.put("status", "deleted");
-					responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+			if (principal != null && id != null) {
+				user = userService.getUserDetails(principal);
+				if (user != null && user.getRole().getName().toLowerCase().equals("role_admin")) {
+					Doctor doctor = doctorService.getDoctorById(id);
+					boolean flag = doctorService.deleteDoctor(doctor);
+					if (flag) {
+						map.put("status", "deleted");
+						responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+					} else {
+						map.put("status", "Please try again");
+						responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+					}
 				} else {
-					map.put("status", "Please try again");
-					responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+					map.put("status", "Unauthorized access. Please try again");
+					responseEntity = new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
 				}
 			} else {
-				map.put("status", "Unauthorized access. Please try again");
-				responseEntity = new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
+				responseEntity = new ResponseEntity<>("Request data is empty. Please try again",
+						HttpStatus.NOT_ACCEPTABLE);
 			}
 
 		} catch (Exception e) {

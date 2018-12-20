@@ -80,15 +80,20 @@ public class PatientRestController {
 		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			PatientDTO patientDTO = new ObjectMapper().readValue(requestData, PatientDTO.class);
-			Patient patient = new Patient();
-			patient = patientService.createOrUpdatePatient(patient, patientDTO);
-			if (patient.getId() != null) {
-				map.put("status", "success");
-				responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+			if (requestData != null) {
+				PatientDTO patientDTO = new ObjectMapper().readValue(requestData, PatientDTO.class);
+				Patient patient = new Patient();
+				patient = patientService.createOrUpdatePatient(patient, patientDTO);
+				if (patient.getId() != null) {
+					map.put("status", "success");
+					responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+				} else {
+					map.put("status", "Please try again");
+					responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+				}
 			} else {
-				map.put("status", "Please try again");
-				responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+				responseEntity = new ResponseEntity<>("Request data is empty. Please try again",
+						HttpStatus.NOT_ACCEPTABLE);
 			}
 
 		} catch (Exception e) {
@@ -107,11 +112,19 @@ public class PatientRestController {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			PatientDTO patientDTO = new ObjectMapper().readValue(requestData, PatientDTO.class);
-			Patient patient = patientService.getPatientById(id);
-			patient = patientService.createOrUpdatePatient(patient, patientDTO);
-			map.put("status", "updated");
-			responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+			if (id != null && requestData != null) {
+
+				PatientDTO patientDTO = new ObjectMapper().readValue(requestData, PatientDTO.class);
+				Patient patient = patientService.getPatientById(id);
+				patient = patientService.createOrUpdatePatient(patient, patientDTO);
+				map.put("status", "updated");
+				responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+
+			} else {
+				responseEntity = new ResponseEntity<>("Request data is empty. Please try again",
+						HttpStatus.NOT_ACCEPTABLE);
+			}
+
 		} catch (Exception e) {
 			map.put("status", "error");
 			responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -129,21 +142,27 @@ public class PatientRestController {
 		User user = null;
 
 		try {
-			user = userService.getUserDetails(principal);
-			if (user.getRole().getName().toLowerCase().equals("role_admin")) {
-				Patient patient = patientService.getPatientById(id);
-				boolean flag = patientService.deletePatient(patient);
-				if (flag) {
-					map.put("status", "deleted");
-					responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+			if (id != null && principal != null) {
+				user = userService.getUserDetails(principal);
+				if (user != null && user.getRole().getName().toLowerCase().equals("role_admin")) {
+					Patient patient = patientService.getPatientById(id);
+					boolean flag = patientService.deletePatient(patient);
+					if (flag) {
+						map.put("status", "deleted");
+						responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+					} else {
+						map.put("status", "Please try again");
+						responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+					}
 				} else {
-					map.put("status", "Please try again");
-					responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+					map.put("status", "Unauthorized access. Please try again");
+					responseEntity = new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
 				}
 			} else {
-				map.put("status", "Unauthorized access. Please try again");
-				responseEntity = new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
+				responseEntity = new ResponseEntity<>("Request data is empty. Please try again",
+						HttpStatus.NOT_ACCEPTABLE);
 			}
+
 		} catch (Exception e) {
 			map.put("status", "error");
 			responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
