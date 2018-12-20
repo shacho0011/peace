@@ -46,10 +46,9 @@ public class PatientRestController {
 				PatientDTO patientDTO = null;
 				patientDTO = patientService.getPatientDTO(patientId);
 				if (patientDTO != null) {
-					map.put("data", patientDTO);
-					responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+					responseEntity = new ResponseEntity<>(patientDTO, HttpStatus.OK);
 				} else {
-					map.put("data", "No data found");
+					map.put("status", "No data found");
 					responseEntity = new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 				}
 
@@ -57,10 +56,9 @@ public class PatientRestController {
 				List<PatientDTO> patientDTOs = new ArrayList();
 				patientDTOs = patientService.getAllPatients();
 				if (patientDTOs.size() > 0) {
-					map.put("data", patientDTOs);
-					responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+					responseEntity = new ResponseEntity<>(patientDTOs, HttpStatus.OK);
 				} else {
-					map.put("data", "No data found");
+					map.put("status", "No data found");
 					responseEntity = new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 				}
 			}
