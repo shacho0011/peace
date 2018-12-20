@@ -24,10 +24,10 @@ public class JwtAuthenticationTokenFilter extends AbstractAuthenticationProcessi
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
 
-        String header = httpServletRequest.getHeader("Authorization");
+        String header = httpServletRequest.getHeader("jwt_token");
 
 
-        if (header == null || !header.startsWith("Peace ")) {
+        if (header == null || !header.startsWith("Bearer ")) {
           
         	ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.setCode(401);
