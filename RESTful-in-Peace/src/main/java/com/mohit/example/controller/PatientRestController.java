@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +37,7 @@ public class PatientRestController {
 	UserService userService;
 
 	@GetMapping("/patients")
-	ResponseEntity<Object> getDoctors(@RequestParam Optional<Long> id) {
+	ResponseEntity<Object> getDoctors(@RequestHeader("patient_id") Optional<Long> id) {
 		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 
@@ -73,12 +75,12 @@ public class PatientRestController {
 	}
 
 	@PostMapping("/insert/patient/new")
-	ResponseEntity<Object> insertDoctor(@RequestParam String json) {
+	ResponseEntity<Object> insertDoctor(@RequestBody String requestData) {
 
 		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			PatientDTO patientDTO = new ObjectMapper().readValue(json, PatientDTO.class);
+			PatientDTO patientDTO = new ObjectMapper().readValue(requestData, PatientDTO.class);
 			Patient patient = new Patient();
 			patient = patientService.createOrUpdatePatient(patient, patientDTO);
 			if (patient.getId() != null) {
@@ -99,13 +101,13 @@ public class PatientRestController {
 	}
 
 	@PutMapping("/update/patients")
-	ResponseEntity<Object> updateDoctor(@RequestParam Long id, @RequestParam String json) {
+	ResponseEntity<Object> updateDoctor(@RequestHeader("patient_id") Long id, @RequestBody String requestData) {
 
 		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			PatientDTO patientDTO = new ObjectMapper().readValue(json, PatientDTO.class);
+			PatientDTO patientDTO = new ObjectMapper().readValue(requestData, PatientDTO.class);
 			Patient patient = patientService.getPatientById(id);
 			patient = patientService.createOrUpdatePatient(patient, patientDTO);
 			map.put("status", "updated");
@@ -120,7 +122,7 @@ public class PatientRestController {
 	}
 
 	@DeleteMapping("/delete/patients")
-	ResponseEntity<Object> deleteDoctor(Principal principal, @RequestParam Long id) {
+	ResponseEntity<Object> deleteDoctor(Principal principal, @RequestHeader("patient_id") Long id) {
 
 		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();

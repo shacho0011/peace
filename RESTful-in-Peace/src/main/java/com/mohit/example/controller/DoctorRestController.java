@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +37,7 @@ public class DoctorRestController {
 	UserService userService;
 
 	@GetMapping("/doctors")
-	ResponseEntity<Object> getDoctors(@RequestParam Optional<Long> id) {
+	ResponseEntity<Object> getDoctors(@RequestHeader("doctor_id") Optional<Long> id) {
 		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 
@@ -73,12 +75,12 @@ public class DoctorRestController {
 	}
 
 	@PostMapping("/insert/doctor/new")
-	ResponseEntity<Object> insertDoctor(@RequestParam String json) {
+	ResponseEntity<Object> insertDoctor(@RequestBody String requestData) {
 		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			DoctorInfoDTO doctorInfoDTO = new ObjectMapper().readValue(json, DoctorInfoDTO.class);
+			DoctorInfoDTO doctorInfoDTO = new ObjectMapper().readValue(requestData, DoctorInfoDTO.class);
 			Doctor doctor = new Doctor();
 			doctor = doctorService.createOrUpdateDoctor(doctor, doctorInfoDTO);
 			if (doctor.getId() != null) {
@@ -99,12 +101,12 @@ public class DoctorRestController {
 	}
 
 	@PutMapping("/update/doctors")
-	ResponseEntity<Object> updateDoctor(@RequestParam Long id, @RequestParam String json) {
+	ResponseEntity<Object> updateDoctor(@RequestHeader("doctor_id") Long id, @RequestBody String requestData) {
 		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			DoctorInfoDTO doctorInfoDTO = new ObjectMapper().readValue(json, DoctorInfoDTO.class);
+			DoctorInfoDTO doctorInfoDTO = new ObjectMapper().readValue(requestData, DoctorInfoDTO.class);
 			Doctor doctor = doctorService.getDoctorById(id);
 			doctor = doctorService.createOrUpdateDoctor(doctor, doctorInfoDTO);
 			map.put("status", "updated");
@@ -119,7 +121,7 @@ public class DoctorRestController {
 	}
 
 	@DeleteMapping("/delete/doctors")
-	ResponseEntity<Object> deleteDoctor(Principal principal, @RequestParam Long id) {
+	ResponseEntity<Object> deleteDoctor(Principal principal, @RequestHeader("doctor_id") Long id) {
 		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 		User user = null;
