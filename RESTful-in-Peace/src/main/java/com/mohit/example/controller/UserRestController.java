@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,6 +31,8 @@ public class UserRestController {
 	DtoUtilService dtoUtilService;
 	@Autowired
 	JwtGenerator jwtGenerator;
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	@PostMapping("/register")
 	public ResponseEntity<Object> userRegistration(@RequestParam String json) {
@@ -37,14 +40,28 @@ public class UserRestController {
 
 		try {
 			UserInfoDTO userInfoDTO = new ObjectMapper().readValue(json, UserInfoDTO.class);
-			User user = new User();
-			user = userService.createOrUpdateUser(user, userInfoDTO);
-			if (user.getId() != null) {
-				RegistrationResponseDTO registrationResponseDTO = dtoUtilService
-						.convertToRegistrationResponseDTOFromModel(user);
-				responseEntity = new ResponseEntity<>(registrationResponseDTO, HttpStatus.OK);
-			}else {
-				responseEntity = new ResponseEntity<>("Internal server error. Please try again", HttpStatus.INTERNAL_SERVER_ERROR);
+			if (userInfoDTO != null) {
+				User user = null;
+				user = userService.getUserByEmail(userInfoDTO.getEmail());
+				if (user == null) {
+
+					user = new User();
+					user = userService.createOrUpdateUser(user, userInfoDTO);
+					if (user.getId() != null) {
+						RegistrationResponseDTO registrationResponseDTO = dtoUtilService
+								.convertToRegistrationResponseDTOFromModel(user);
+						responseEntity = new ResponseEntity<>(registrationResponseDTO, HttpStatus.OK);
+					} else {
+						responseEntity = new ResponseEntity<>("Internal server error. Please try again",
+								HttpStatus.INTERNAL_SERVER_ERROR);
+					}
+
+				} else {
+					responseEntity = new ResponseEntity<>("User already exists", HttpStatus.CONFLICT);
+				}
+
+			} else {
+				responseEntity = new ResponseEntity<>("Data error. Please try again", HttpStatus.NOT_ACCEPTABLE);
 			}
 
 		} catch (Exception e) {
@@ -62,12 +79,12 @@ public class UserRestController {
 		try {
 			LoginDTO loginDTO = new ObjectMapper().readValue(json, LoginDTO.class);
 			User user = null;
-			JwtUser jwtUser = new JwtUser();  
+			JwtUser jwtUser = new JwtUser();
 			if (loginDTO.getEmail() != null && loginDTO.getPassword() != null) {
 				user = userService.getUserByEmail(loginDTO.getEmail());
 
 				if (user != null) {
-					if (loginDTO.getPassword().equals(user.getPassword())) {
+					if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
 						LoginResponseDTO loginResponseDTO = dtoUtilService.convertToLoginResponseDTOFromModel(user);
 						jwtUser.setId(user.getId());
 						jwtUser.setUserName(user.getEmail());

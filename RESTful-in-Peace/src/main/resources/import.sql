@@ -1,10 +1,10 @@
 insert into role set id=1, name="role_user";
 insert into role set id=2, name="role_admin";
 
-insert into user set id=1, role_id=2, first_name="John", last_name="Cena", email="john@rokomari.com", mobile="1233", password="123456";
-insert into user set id=2, role_id=1, first_name="Steiv", last_name="John", email="steiv@rokomari.com", mobile="1234", password="123456";
-insert into user set id=3, role_id=1, first_name="Sen", last_name="Poul", email="sen@rokomari.com", mobile="1235", password="123456";
-insert into user set id=4, role_id=1, first_name="Henrrey", last_name="Joarge", email="henrrey@rokomari.com", mobile="1236", password="123456";
+insert into user set id=1, role_id=2, first_name="John", last_name="Cena", email="john@rokomari.com", mobile="1233", password="$2a$10$6fz9IApXMR2LjZDB5TkPlODdkSINttQX5Pznb02pn7SjSEziICoRG";
+insert into user set id=2, role_id=1, first_name="Steiv", last_name="John", email="steiv@rokomari.com", mobile="1234", password="$2a$10$6fz9IApXMR2LjZDB5TkPlODdkSINttQX5Pznb02pn7SjSEziICoRG";
+insert into user set id=3, role_id=1, first_name="Sen", last_name="Poul", email="sen@rokomari.com", mobile="1235", password="$2a$10$6fz9IApXMR2LjZDB5TkPlODdkSINttQX5Pznb02pn7SjSEziICoRG";
+insert into user set id=4, role_id=1, first_name="Henrrey", last_name="Joarge", email="henrrey@rokomari.com", mobile="1236", password="$2a$10$6fz9IApXMR2LjZDB5TkPlODdkSINttQX5Pznb02pn7SjSEziICoRG";
 
 insert into doctor set id=1, name="Dr. Hellen", dept="Critical Care Medicine Specialists", joining="2017-05-10";
 insert into doctor set id=2, name="Dr. Joarge", dept="Anesthesiologists", joining="2017-07-15";

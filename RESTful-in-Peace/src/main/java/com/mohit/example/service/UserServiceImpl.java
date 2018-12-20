@@ -6,6 +6,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.mohit.example.dto.UserInfoDTO;
@@ -17,6 +18,8 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	@Override
 	public User createOrUpdateUser(User user, UserInfoDTO userInfoDTO) {
@@ -35,7 +38,7 @@ public class UserServiceImpl implements UserService {
 				user.setMobile(userInfoDTO.getMobile());
 			}
 			if (userInfoDTO.getPassword() != null) {
-				user.setPassword(userInfoDTO.getPassword());
+				user.setPassword(passwordEncoder.encode(userInfoDTO.getPassword()));
 			}
 
 			user = userRepository.save(user);
