@@ -2,14 +2,15 @@ package com.mohit.example.dto;
 
 public class LoginResponseDTO {
 	
-	String firstName;
+	String first_name;
 	String email;
 	String status;
-	public String getFirstName() {
-		return firstName;
+	
+	public String getFirst_name() {
+		return first_name;
 	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setFirst_name(String first_name) {
+		this.first_name = first_name;
 	}
 	public String getEmail() {
 		return email;

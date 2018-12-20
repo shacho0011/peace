@@ -68,7 +68,7 @@ public class PatientServiceImpl implements PatientService {
 
 	@Override
 	public Patient createOrUpdatePatient(Patient patient, PatientDTO patientDTO) {
-		
+
 		try {
 
 			if (patientDTO.getName() != null) {
@@ -86,8 +86,8 @@ public class PatientServiceImpl implements PatientService {
 			if (patientDTO.getOccupation() != null) {
 				patient.setOccupation(patientDTO.getOccupation());
 			}
-			if (patientDTO.getSymptomSummary() != null) {
-				patient.setSymptomSummary(patientDTO.getSymptomSummary());
+			if (patientDTO.getSymptom_summary() != null) {
+				patient.setSymptom_summary(patientDTO.getSymptom_summary());
 			}
 
 			patient = patientRepository.save(patient);

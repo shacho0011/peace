@@ -25,11 +25,11 @@ public class UserServiceImpl implements UserService {
 	public User createOrUpdateUser(User user, UserInfoDTO userInfoDTO) {
 		try {
 
-			if (userInfoDTO.getFirstName() != null) {
-				user.setFirstName(userInfoDTO.getFirstName());
+			if (userInfoDTO.getFirst_name() != null) {
+				user.setFirst_name(userInfoDTO.getFirst_name());
 			}
-			if (userInfoDTO.getLastName() != null) {
-				user.setLastName(userInfoDTO.getLastName());
+			if (userInfoDTO.getLast_name() != null) {
+				user.setLast_name(userInfoDTO.getLast_name());
 			}
 			if (userInfoDTO.getEmail() != null) {
 				user.setEmail(userInfoDTO.getEmail());

@@ -8,7 +8,7 @@ public class PatientDTO {
 	Integer age;
 	String gender;
 	String occupation;
-	String symptomSummary;
+	String symptom_summary;
 	public Long getId() {
 		return id;
 	}
@@ -45,11 +45,11 @@ public class PatientDTO {
 	public void setOccupation(String occupation) {
 		this.occupation = occupation;
 	}
-	public String getSymptomSummary() {
-		return symptomSummary;
+	public String getSymptom_summary() {
+		return symptom_summary;
 	}
-	public void setSymptomSummary(String symptomSummary) {
-		this.symptomSummary = symptomSummary;
+	public void setSymptom_summary(String symptom_summary) {
+		this.symptom_summary = symptom_summary;
 	}
 
 }
