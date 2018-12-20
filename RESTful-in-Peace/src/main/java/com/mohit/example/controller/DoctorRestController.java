@@ -35,8 +35,8 @@ public class DoctorRestController {
 	UserService userService;
 
 	@GetMapping("/doctors")
-	Map<String, Object> getDoctors(@RequestParam Optional<Long> id) {
-
+	ResponseEntity<Object> getDoctors(@RequestParam Optional<Long> id) {
+		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
@@ -45,41 +45,64 @@ public class DoctorRestController {
 				Long doctorId = id.get();
 				DoctorInfoDTO doctorInfoDTO = null;
 				doctorInfoDTO = doctorService.getDoctor(doctorId);
-				map.put("data", doctorInfoDTO);
+				if (doctorInfoDTO != null) {
+					map.put("data", doctorInfoDTO);
+					responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+				} else {
+					map.put("data", "No data found");
+					responseEntity = new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+				}
+
 			} else {
 				List<DoctorInfoDTO> doctorInfoDTOs = new ArrayList();
 				doctorInfoDTOs = doctorService.getAllDoctors();
-				map.put("data", doctorInfoDTOs);
+				if (doctorInfoDTOs.size() > 0) {
+					map.put("data", doctorInfoDTOs);
+					responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+				} else {
+					map.put("data", "No data found");
+					responseEntity = new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+				}
 			}
 
 		} catch (Exception e) {
+			map.put("status", "error");
+			responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 
-		return map;
+		return responseEntity;
 	}
 
 	@PostMapping("/insert/doctor/new")
-	Map<String, Object> insertDoctor(@RequestParam String json) {
-
+	ResponseEntity<Object> insertDoctor(@RequestParam String json) {
+		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			DoctorInfoDTO doctorInfoDTO = new ObjectMapper().readValue(json, DoctorInfoDTO.class);
 			Doctor doctor = new Doctor();
 			doctor = doctorService.createOrUpdateDoctor(doctor, doctorInfoDTO);
-			map.put("status", "success");
+			if (doctor.getId() != null) {
+				map.put("status", "success");
+				responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+			} else {
+				map.put("status", "Please try again");
+				responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
 		} catch (Exception e) {
 			map.put("status", "error");
+			responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 
-		return map;
+		return responseEntity;
 	}
 
 	@PutMapping("/update/doctors")
-	Map<String, Object> updateDoctor(@RequestParam Long id, @RequestParam String json) {
-
+	ResponseEntity<Object> updateDoctor(@RequestParam Long id, @RequestParam String json) {
+		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
@@ -87,12 +110,14 @@ public class DoctorRestController {
 			Doctor doctor = doctorService.getDoctorById(id);
 			doctor = doctorService.createOrUpdateDoctor(doctor, doctorInfoDTO);
 			map.put("status", "updated");
+			responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
 		} catch (Exception e) {
 			map.put("status", "error");
+			responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 
-		return map;
+		return responseEntity;
 	}
 
 	@DeleteMapping("/delete/doctors")
@@ -112,7 +137,7 @@ public class DoctorRestController {
 					map.put("status", "Please try again");
 					responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 				}
-			}else {
+			} else {
 				map.put("status", "Unauthorized access. Please try again");
 				responseEntity = new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
 			}

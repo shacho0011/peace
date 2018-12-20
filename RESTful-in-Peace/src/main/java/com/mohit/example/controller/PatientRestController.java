@@ -35,8 +35,8 @@ public class PatientRestController {
 	UserService userService;
 
 	@GetMapping("/patients")
-	Map<String, Object> getDoctors(@RequestParam Optional<Long> id) {
-
+	ResponseEntity<Object> getDoctors(@RequestParam Optional<Long> id) {
+		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
@@ -45,41 +45,65 @@ public class PatientRestController {
 				Long patientId = id.get();
 				PatientDTO patientDTO = null;
 				patientDTO = patientService.getPatientDTO(patientId);
-				map.put("data", patientDTO);
+				if (patientDTO != null) {
+					map.put("data", patientDTO);
+					responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+				} else {
+					map.put("data", "No data found");
+					responseEntity = new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+				}
+
 			} else {
 				List<PatientDTO> patientDTOs = new ArrayList();
 				patientDTOs = patientService.getAllPatients();
-				map.put("data", patientDTOs);
+				if (patientDTOs.size() > 0) {
+					map.put("data", patientDTOs);
+					responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+				} else {
+					map.put("data", "No data found");
+					responseEntity = new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+				}
 			}
 
 		} catch (Exception e) {
+			map.put("status", "error");
+			responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 
-		return map;
+		return responseEntity;
 	}
 
 	@PostMapping("/insert/patient/new")
-	Map<String, Object> insertDoctor(@RequestParam String json) {
+	ResponseEntity<Object> insertDoctor(@RequestParam String json) {
 
+		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
-
 		try {
 			PatientDTO patientDTO = new ObjectMapper().readValue(json, PatientDTO.class);
 			Patient patient = new Patient();
 			patient = patientService.createOrUpdatePatient(patient, patientDTO);
-			map.put("status", "success");
+			if (patient.getId() != null) {
+				map.put("status", "success");
+				responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
+			} else {
+				map.put("status", "Please try again");
+				responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
 		} catch (Exception e) {
 			map.put("status", "error");
+			responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 
-		return map;
+		return responseEntity;
 	}
 
 	@PutMapping("/update/patients")
-	Map<String, Object> updateDoctor(@RequestParam Long id, @RequestParam String json) {
+	ResponseEntity<Object> updateDoctor(@RequestParam Long id, @RequestParam String json) {
 
+		ResponseEntity<Object> responseEntity;
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
@@ -87,12 +111,14 @@ public class PatientRestController {
 			Patient patient = patientService.getPatientById(id);
 			patient = patientService.createOrUpdatePatient(patient, patientDTO);
 			map.put("status", "updated");
+			responseEntity = new ResponseEntity<>(map, HttpStatus.OK);
 		} catch (Exception e) {
 			map.put("status", "error");
+			responseEntity = new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 
-		return map;
+		return responseEntity;
 	}
 
 	@DeleteMapping("/delete/patients")
