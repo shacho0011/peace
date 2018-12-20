@@ -1,14 +1,16 @@
 package com.mohit.example.service;
 
-import java.text.SimpleDateFormat;
-
+import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.mohit.example.dto.UserInfoDTO;
 import com.mohit.example.model.User;
 import com.mohit.example.repository.UserRepository;
-import com.mohit.example.utill.DbUtills;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -53,6 +55,19 @@ public class UserServiceImpl implements UserService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return user;
+	}
+
+	@Override
+	public User getUserDetails(Principal principal) {
+		User user = null;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth instanceof UsernamePasswordAuthenticationToken) {
+			UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal();
+			user = userRepository.findByEmail(userDetails.getUsername());
+		}
+
 		return user;
 	}
 

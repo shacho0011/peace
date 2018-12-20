@@ -34,7 +34,6 @@ public class UserRestController {
 	@PostMapping("/register")
 	public ResponseEntity<Object> userRegistration(@RequestParam String json) {
 		ResponseEntity<Object> responseEntity;
-		HttpHeaders headers = new HttpHeaders();
 
 		try {
 			UserInfoDTO userInfoDTO = new ObjectMapper().readValue(json, UserInfoDTO.class);
