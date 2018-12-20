@@ -10,7 +10,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.mohit.example.dto.UserInfoDTO;
+import com.mohit.example.model.Role;
 import com.mohit.example.model.User;
+import com.mohit.example.repository.RoleRepository;
 import com.mohit.example.repository.UserRepository;
 
 @Service
@@ -20,6 +22,8 @@ public class UserServiceImpl implements UserService {
 	UserRepository userRepository;
 	@Autowired
 	PasswordEncoder passwordEncoder;
+	@Autowired
+	RoleRepository roleRepository;
 
 	@Override
 	public User createOrUpdateUser(User user, UserInfoDTO userInfoDTO) {
@@ -40,6 +44,8 @@ public class UserServiceImpl implements UserService {
 			if (userInfoDTO.getPassword() != null) {
 				user.setPassword(passwordEncoder.encode(userInfoDTO.getPassword()));
 			}
+			Role role = roleRepository.findByName("role_user");
+			user.setRole(role);
 
 			user = userRepository.save(user);
 
