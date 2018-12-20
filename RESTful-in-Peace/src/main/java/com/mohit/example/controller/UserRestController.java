@@ -1,9 +1,9 @@
 package com.mohit.example.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +16,7 @@ import com.mohit.example.dto.RegistrationResponseDTO;
 import com.mohit.example.dto.UserInfoDTO;
 import com.mohit.example.model.User;
 import com.mohit.example.model.security.JwtUser;
+import com.mohit.example.security.JwtGenerator;
 import com.mohit.example.service.DtoUtilService;
 import com.mohit.example.service.UserService;
 
@@ -27,10 +28,13 @@ public class UserRestController {
 	UserService userService;
 	@Autowired
 	DtoUtilService dtoUtilService;
+	@Autowired
+	JwtGenerator jwtGenerator;
 
 	@PostMapping("/register")
-	public Map<String, Object> userRegistration(@RequestParam String json) {
-		Map<String, Object> map = new HashMap<String, Object>();
+	public ResponseEntity<Object> userRegistration(@RequestParam String json) {
+		ResponseEntity<Object> responseEntity;
+		HttpHeaders headers = new HttpHeaders();
 
 		try {
 			UserInfoDTO userInfoDTO = new ObjectMapper().readValue(json, UserInfoDTO.class);
@@ -39,47 +43,54 @@ public class UserRestController {
 			if (user.getId() != null) {
 				RegistrationResponseDTO registrationResponseDTO = dtoUtilService
 						.convertToRegistrationResponseDTOFromModel(user);
-				map.put("data", registrationResponseDTO);
+				responseEntity = new ResponseEntity<>(registrationResponseDTO, HttpStatus.OK);
+			}else {
+				responseEntity = new ResponseEntity<>("Internal server error. Please try again", HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 
 		} catch (Exception e) {
-			map.put("status", "error");
+			responseEntity = new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 
-		return map;
+		return responseEntity;
 	}
 
 	@PostMapping("/login")
-	public Map<String, Object> userLogin(@RequestParam String json) {
-		Map<String, Object> map = new HashMap<String, Object>();
-
+	public ResponseEntity<Object> userLogin(@RequestParam String json) {
+		ResponseEntity<Object> responseEntity;
+		HttpHeaders headers = new HttpHeaders();
 		try {
 			LoginDTO loginDTO = new ObjectMapper().readValue(json, LoginDTO.class);
 			User user = null;
+			JwtUser jwtUser = new JwtUser();  
 			if (loginDTO.getEmail() != null && loginDTO.getPassword() != null) {
 				user = userService.getUserByEmail(loginDTO.getEmail());
 
 				if (user != null) {
 					if (loginDTO.getPassword().equals(user.getPassword())) {
 						LoginResponseDTO loginResponseDTO = dtoUtilService.convertToLoginResponseDTOFromModel(user);
-						map.put("data", loginResponseDTO);
+						jwtUser.setId(user.getId());
+						jwtUser.setUserName(user.getEmail());
+						jwtUser.setRole("user");
+						headers.add("jwt_token", jwtGenerator.generate(jwtUser));
+						responseEntity = new ResponseEntity<>(loginResponseDTO, headers, HttpStatus.OK);
 					} else {
-						map.put("status", "error");
+						responseEntity = new ResponseEntity<>("Password mismatch.", HttpStatus.NOT_FOUND);
 					}
 				} else {
-					map.put("status", "error");
+					responseEntity = new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
 				}
 			} else {
-				map.put("status", "error");
+				responseEntity = new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
 			}
 
 		} catch (Exception e) {
-			map.put("status", "error");
+			responseEntity = new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 
-		return map;
+		return responseEntity;
 	}
 
 }
