@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,11 +36,11 @@ public class UserRestController {
 	PasswordEncoder passwordEncoder;
 
 	@PostMapping("/register")
-	public ResponseEntity<Object> userRegistration(@RequestParam String json) {
+	public ResponseEntity<Object> userRegistration(@RequestBody String requestData) {
 		ResponseEntity<Object> responseEntity;
 
 		try {
-			UserInfoDTO userInfoDTO = new ObjectMapper().readValue(json, UserInfoDTO.class);
+			UserInfoDTO userInfoDTO = new ObjectMapper().readValue(requestData, UserInfoDTO.class);
 			if (userInfoDTO != null) {
 				User user = null;
 				user = userService.getUserByEmail(userInfoDTO.getEmail());
@@ -73,11 +74,11 @@ public class UserRestController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<Object> userLogin(@RequestParam String json) {
+	public ResponseEntity<Object> userLogin(@RequestBody String requestData) {
 		ResponseEntity<Object> responseEntity;
 		HttpHeaders headers = new HttpHeaders();
 		try {
-			LoginDTO loginDTO = new ObjectMapper().readValue(json, LoginDTO.class);
+			LoginDTO loginDTO = new ObjectMapper().readValue(requestData, LoginDTO.class);
 			User user = null;
 			JwtUser jwtUser = new JwtUser();
 			if (loginDTO.getEmail() != null && loginDTO.getPassword() != null) {
