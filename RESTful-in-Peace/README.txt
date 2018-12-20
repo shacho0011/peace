@@ -1,4 +1,13 @@
 ----------------------------------------------------------------
+-----------------------------Server-----------------------------
+----------------------------------------------------------------
+
+port=9999
+context-path=/example
+
+
+
+----------------------------------------------------------------
 ----------------------------DATABASE----------------------------
 ----------------------------------------------------------------
 
@@ -29,7 +38,6 @@ NOTE: Only #Admin has the authority to delete any data(as for example)
 ----------------------------------------------------------------
 
 When a user login, a #TOKEN is given in the #HEADER part as #jwt_token
-
-NOTE: 	#TOKEN always start with "Peace ". So the Ultimate token will be "Peace "+generated_token
-		#TOKEN is added in HEADER as "Authorization" key
+#TOKEN always start with "Bearer ". So the Ultimate token will be "Bearer "+generated_token
+#TOKEN is added in HEADER as "jwt_token" key
 		
